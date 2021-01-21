@@ -1,0 +1,11 @@
+version: "3"
+services:
+  worker:
+    image: weblinuxgame/hyperf-docker
+    container_name: worker
+    ports:
+    - 22080:80
+    volumes:
+    -./entrypoint.sh:/bin/entrypoint.sh
+    -./:/data/wwwroot/worker
+    restart: always
