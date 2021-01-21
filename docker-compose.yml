@@ -4,8 +4,8 @@ services:
     image: weblinuxgame/hyperf-docker
     container_name: worker
     ports:
-    - 22080:80
+      - "22080:80"
     volumes:
-    -./entrypoint.sh:/bin/entrypoint.sh
-    -./:/data/wwwroot/worker
+      - "./entrypoint.sh:/bin/entrypoint.sh"
+      - "./:/data/wwwroot/worker:rw"
     restart: always
