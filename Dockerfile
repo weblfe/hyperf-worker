@@ -28,9 +28,19 @@ RUN set -ex \
     # for swoole extension libaio linux-headers
     && apk add --no-cache libstdc++ openssl git bash \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS libaio-dev openssl-dev \
-    # download
+    # download (swoole,hiredis)
     && cd /tmp \
+    && curl -SL "https://github.com/redis/hiredis/archive/v1.0.0.tar.gz" -o hiredis.tar.gz \
     && curl -SL "https://github.com/swoole/swoole-src/archive/${SW_VERSION}.tar.gz" -o swoole.tar.gz \
+    && cd /tmp \
+    && mkdir -p hiredis \
+    && tar -xf hiredis.tar.gz -C hiredis --strip-components=1 \
+    && ( \
+    cd hiredis \
+    && make -j \
+    && make install \
+    && ldconfig \
+    ) \
     && ls -alh \
     # php extension:swoole
     && cd /tmp \
@@ -41,7 +51,7 @@ RUN set -ex \
     && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-mysqlnd --enable-openssl --enable-http2 \
+        && ./configure --enable-mysqlnd --enable-openssl --enable-async-redis --enable-sockets --enable-http2 \
         && make -s -j$(nproc) && make install \
     ) \
     && echo "memory_limit=1G" > /etc/php7/conf.d/00_default.ini \
